@@ -36,6 +36,6 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 	if auth {
 		response.WriteHeader(http.StatusOK)
 		response.Write([]byte("{\"message\": \"Successfully signed in\"}"))
-		return
+
 	}
 }

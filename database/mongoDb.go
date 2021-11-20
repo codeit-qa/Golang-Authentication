@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func HandleDatabaseInsert(DBname string, CollectionName string, user interface{}) {
+func HandleDatabaseInsert(DBname string, CollectionName string, user interface{}) bool {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
 	if err != nil {
@@ -18,8 +18,13 @@ func HandleDatabaseInsert(DBname string, CollectionName string, user interface{}
 
 	collection := client.Database(DBname).Collection(CollectionName)
 
-	collection.InsertOne(ctx, user)
+	_, errInsert := collection.InsertOne(ctx, user)
 
+	if errInsert != nil {
+		return false
+	}
+
+	return true
 }
 
 func HandleAuthentication(email string, password string, DBname string, CollectionName string, user interface{}) bool {

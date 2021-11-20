@@ -38,8 +38,16 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	user.Token = token
 	user.Refresh_token = refreshToken
 
-	database.HandleDatabaseInsert("GO", "users", user)
+	insertErr := database.HandleDatabaseInsert("GO", "users", user)
 
-	json.NewEncoder(response).Encode(user)
+	if insertErr {
+		response.WriteHeader(http.StatusOK)
+		json.NewEncoder(response).Encode(user)
+
+	} else {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("{\"message\": \"Duplicate Data\"}"))
+		return
+	}
 
 }
