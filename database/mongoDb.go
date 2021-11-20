@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func HandleDatabase(DBname string, CollectionName string, user interface{}) {
+func HandleDatabaseInsert(DBname string, CollectionName string, user interface{}) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
 	if err != nil {
@@ -19,4 +20,24 @@ func HandleDatabase(DBname string, CollectionName string, user interface{}) {
 
 	collection.InsertOne(ctx, user)
 
+}
+
+func HandleAuthentication(email string, password string, DBname string, CollectionName string, user interface{}) bool {
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
+	if err != nil {
+		panic(err)
+	}
+
+	collection := client.Database(DBname).Collection(CollectionName)
+
+	errFind := collection.FindOne(ctx, bson.M{"email": email, "password": password}).Decode(&user)
+
+	if errFind != nil {
+		return false
+
+	}
+
+	return true
 }

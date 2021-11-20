@@ -19,3 +19,8 @@ type UserModel struct {
 	Updated_at    time.Time          `json:"updated_at"`
 	User_id       string             `json:"user_id"`
 }
+
+type AuthenticationModel struct {
+	Email    string `json:"email" validate:"required" bson:"email"`
+	Password string `json:"password" validate:"required" bson:"password"`
+}

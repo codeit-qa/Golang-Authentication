@@ -38,7 +38,7 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	user.Token = token
 	user.Refresh_token = refreshToken
 
-	database.HandleDatabase("GO", "users", user)
+	database.HandleDatabaseInsert("GO", "users", user)
 
 	json.NewEncoder(response).Encode(user)
 

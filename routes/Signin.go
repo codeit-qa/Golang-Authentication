@@ -1,8 +1,11 @@
 package routes
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
+
+	database "GO/database"
+	model "GO/models"
 )
 
 func HandleSignin(response http.ResponseWriter, request *http.Request) {
@@ -14,5 +17,25 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(response, "HandleSignin")
+	var user model.AuthenticationModel
+
+	err := json.NewDecoder(request.Body).Decode(&user)
+
+	if err != nil {
+		http.Error(response, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	auth := database.HandleAuthentication(user.Email, user.Password, "GO", "users", &user)
+
+	if !auth {
+		response.WriteHeader(http.StatusUnauthorized)
+		response.Write([]byte("{\"message\": \"Invalid credentials\"}"))
+		return
+	}
+	if auth {
+		response.WriteHeader(http.StatusOK)
+		response.Write([]byte("{\"message\": \"Successfully signed in\"}"))
+		return
+	}
 }
