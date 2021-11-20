@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	http.HandleFunc("/login", routes.HandleSignin)
+	http.HandleFunc("/login", routes.HandleSignup)
 
 	http.ListenAndServe(":8080", nil)
 
