@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	database "GO/database"
 	helper "GO/helpers"
 	model "GO/models"
 
@@ -30,6 +31,8 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	token, refreshToken, _ := helper.JWTTokenGenerator(user.Email, user.First_name, user.Last_name, user.User_id)
 	user.Token = token
 	user.Refresh_token = refreshToken
+
+	database.HandleDatabase("GO", "users", user)
 
 	json.NewEncoder(response).Encode(user)
 
