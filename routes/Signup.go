@@ -15,6 +15,12 @@ import (
 func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 
+	if request.Method != "POST" {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte("{\"message\": \"Method not allowed\"}"))
+		return
+	}
+
 	var user model.UserModel
 
 	err := json.NewDecoder(request.Body).Decode(&user)
