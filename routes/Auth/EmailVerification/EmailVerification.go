@@ -4,13 +4,11 @@ import (
 	database "GO/database"
 	model "GO/models"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 func HandleEmailVerification(response http.ResponseWriter, request *http.Request) {
 
-	response.Header().Set("Content-type", "application/json")
 	AuthToken := request.Header.Get("Authenticate")
 
 	var code model.Code
@@ -38,7 +36,8 @@ func HandleEmailVerification(response http.ResponseWriter, request *http.Request
 		response.Write([]byte("{\"message\": \"Unathorized\"}"))
 		return
 	} else if status {
-		fmt.Println("Email start")
+		response.WriteHeader(http.StatusOK)
+		response.Write([]byte("{\"message\": \"Sucess\"}"))
 
 	}
 

@@ -43,3 +43,7 @@ type ResponseModel struct {
 type Code struct {
 	Code int `json:"code"`
 }
+
+type ForgotPass struct {
+	Email string `json:"email"`
+}

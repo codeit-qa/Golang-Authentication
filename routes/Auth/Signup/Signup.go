@@ -15,7 +15,6 @@ import (
 )
 
 func HandleSignup(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("Content-Type", "application/json")
 
 	if request.Method != "POST" {
 		response.WriteHeader(http.StatusMethodNotAllowed)
@@ -51,7 +50,7 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	if insertErr {
 		response.WriteHeader(http.StatusOK)
 		json.NewEncoder(response).Encode(&result)
-		helper.HandleEmailService(user.Email)
+		helper.HandleEmailService(user.Email, code)
 
 	} else {
 		response.WriteHeader(http.StatusInternalServerError)

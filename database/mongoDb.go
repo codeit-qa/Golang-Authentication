@@ -92,3 +92,20 @@ func HandleTokenAuthentication(DBname string, CollectionName string, token strin
 	defer client.Disconnect(ctx)
 	return true
 }
+
+func HandleForgotPass(email string, DBName string, CollectionName string) bool {
+	var result models.ResponseModel
+
+	ctx, client := HandleDBConnection()
+
+	collection := client.Database(DBName).Collection(CollectionName)
+
+	errFind := collection.FindOne(ctx, bson.M{"email": email}).Decode(&result)
+
+	if errFind != nil {
+		return false
+	}
+
+	defer client.Disconnect(ctx)
+	return true
+}

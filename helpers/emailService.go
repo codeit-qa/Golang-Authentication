@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
-func HandleEmailService(email string) {
+func HandleEmailService(email string, code int) {
 
 	godotenv.Load(".env")
 
@@ -25,7 +26,7 @@ func HandleEmailService(email string) {
 	address := host + ":" + port
 
 	subject := "Subject: Our Golang Email\n"
-	body := `Email from GO-Authentication ${email}`
+	body := "Email from GO-Authentication \nVerification code is : " + strconv.Itoa(code)
 	message := []byte(subject + body)
 
 	auth := smtp.PlainAuth("", from, password, host)
