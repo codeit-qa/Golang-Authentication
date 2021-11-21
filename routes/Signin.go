@@ -3,8 +3,10 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	database "GO/database"
+	helper "GO/helpers"
 	model "GO/models"
 )
 
@@ -18,6 +20,7 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 	}
 
 	var user model.AuthenticationModel
+	var result model.ResponseModel
 
 	err := json.NewDecoder(request.Body).Decode(&user)
 
@@ -26,7 +29,11 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	auth := database.HandleAuthentication(user.Email, user.Password, "GO", "users", &user)
+	auth, email, fname, lname, userid := database.HandleAuthentication(user.Email, user.Password, "GO", "users")
+	token, _, _ := helper.JWTTokenGenerator(email, fname, lname, userid)
+
+	result.Token = token
+	result.Expires_in = time.Now().Local().Add(time.Hour * time.Duration(24)).Unix()
 
 	if !auth {
 		response.WriteHeader(http.StatusUnauthorized)
@@ -35,7 +42,6 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 	}
 	if auth {
 		response.WriteHeader(http.StatusOK)
-		response.Write([]byte("{\"message\": \"Successfully signed in\"}"))
-
+		json.NewEncoder(response).Encode(&result)
 	}
 }

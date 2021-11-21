@@ -21,11 +21,21 @@ type UserModel struct {
 }
 
 type AuthenticationModel struct {
-	Email    string `json:"email" validate:"required" bson:"email"`
-	Password string `json:"password" validate:"required" bson:"password"`
+	First_name string    `json:"first_name" validate:"required"`
+	Last_name  string    `json:"last_name" validate:"required"`
+	Email      string    `json:"email" validate:"required" bson:"email"`
+	Password   string    `json:"password" validate:"required" bson:"password"`
+	Created_at time.Time `json:"created_at"`
+	Updated_at time.Time `json:"updated_at"`
+	User_id    string    `json:"user_id"`
 }
 
 type Error struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
+}
+
+type ResponseModel struct {
+	Token      string `json:"token"`
+	Expires_in int64  `json:"expires_in"`
 }

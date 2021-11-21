@@ -22,6 +22,7 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	}
 
 	var user model.UserModel
+	var result model.ResponseModel
 
 	err := json.NewDecoder(request.Body).Decode(&user)
 
@@ -38,11 +39,14 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	user.Token = token
 	user.Refresh_token = refreshToken
 
-	insertErr := database.HandleDatabaseInsert("GO", "users", user)
+	result.Token = token
+	result.Expires_in = time.Now().Local().Add(time.Hour * time.Duration(24)).Unix()
+
+	insertErr := database.HandleDatabaseInsert("GO", "users", user.Email, user.Phone, user.Password, user.First_name, user.Last_name, user.User_id, user.Created_at, user.Updated_at)
 
 	if insertErr {
 		response.WriteHeader(http.StatusOK)
-		json.NewEncoder(response).Encode(user)
+		json.NewEncoder(response).Encode(&result)
 
 	} else {
 		response.WriteHeader(http.StatusInternalServerError)
