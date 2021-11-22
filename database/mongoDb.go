@@ -53,12 +53,22 @@ func HandleInsertToken(DBName string, CollectionName string, token string, code 
 
 	collectionToken := client.Database(DBName).Collection(CollectionName)
 
-	data := bson.M{"token": token, "code": code, "created_at": created}
+	if code != 0 {
+		data := bson.M{"token": token, "code": code, "created_at": created}
 
-	_, errInsert := collectionToken.InsertOne(ctx, data)
+		_, errInsert := collectionToken.InsertOne(ctx, data)
 
-	if errInsert != nil {
-		return false
+		if errInsert != nil {
+			return false
+		}
+	} else if code == 0 {
+		data := bson.M{"token": token, "created_at": created}
+
+		_, errInsert := collectionToken.InsertOne(ctx, data)
+
+		if errInsert != nil {
+			return false
+		}
 	}
 
 	return true
@@ -91,16 +101,24 @@ func HandleAuthentication(email string, password string, DBname string, Collecti
 func HandleTokenAuthentication(DBname string, CollectionName string, token string, code int) bool {
 
 	var result models.ResponseModel
-
 	ctx, client := HandleDBConnection()
 
 	collection := client.Database(DBname).Collection(CollectionName)
 
-	errFind := collection.FindOne(ctx, bson.M{"token": token, "code": code}).Decode(&result)
+	if code != 0 {
+		errFind := collection.FindOne(ctx, bson.M{"token": token, "code": code}).Decode(&result)
 
-	if errFind != nil {
-		return false
+		if errFind != nil {
+			return false
+		}
+	} else if code == 0 {
+		errFind := collection.FindOne(ctx, bson.M{"token": token}).Decode(&result)
+
+		if errFind != nil {
+			return false
+		}
 	}
+
 	defer client.Disconnect(ctx)
 	return true
 }
@@ -128,6 +146,21 @@ func HandleRemoveCode(DBName string, CollectionName string, code int, token stri
 	collection := client.Database(DBName).Collection(CollectionName)
 
 	_, err := collection.DeleteOne(ctx, bson.M{"code": code})
+	if err != nil {
+		return false
+	}
+
+	defer client.Disconnect(ctx)
+	return true
+}
+
+func HandleUpdatePassword(DBName string, CollectionName string, email string, password string) bool {
+	ctx, client := HandleDBConnection()
+
+	collection := client.Database(DBName).Collection(CollectionName)
+
+	_, err := collection.UpdateOne(ctx, bson.M{"email": email}, bson.M{"$set": bson.M{"password": password}})
+
 	if err != nil {
 		return false
 	}

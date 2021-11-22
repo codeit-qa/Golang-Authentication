@@ -41,7 +41,7 @@ func HandleEmailVerification(response http.ResponseWriter, request *http.Request
 
 		errDel := database.HandleRemoveCode("GO", "tokens", code.Code, AuthToken)
 		if !errDel {
-			response.WriteHeader(http.StatusUnauthorized)
+			response.WriteHeader(http.StatusInternalServerError)
 			response.Write([]byte("{\"message\": \"Internal Server Error\"}"))
 			return
 
@@ -52,7 +52,7 @@ func HandleEmailVerification(response http.ResponseWriter, request *http.Request
 
 		_, err := helpers.ValidateToken(AuthToken)
 
-		if err != "" {
+		if !err {
 			response.WriteHeader(http.StatusUnauthorized)
 			return
 		}

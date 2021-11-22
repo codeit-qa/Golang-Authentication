@@ -19,6 +19,7 @@ func HandleForgotPass(response http.ResponseWriter, request *http.Request) {
 	}
 
 	var forgot models.ForgotPass
+	var result models.ResponseModel
 
 	err := json.NewDecoder(request.Body).Decode(&forgot)
 
@@ -44,6 +45,10 @@ func HandleForgotPass(response http.ResponseWriter, request *http.Request) {
 		token, _, _ := helpers.JWTTokenGenerator(forgot.Email, "", "", "")
 
 		database.HandleInsertToken("GO", "tokens", token, code, time.Now())
+
+		result.Expires_in = time.Now().Local().Add(time.Hour * time.Duration(24)).Unix()
+		result.Token = token
+		json.NewEncoder(response).Encode(&result)
 
 	}
 }

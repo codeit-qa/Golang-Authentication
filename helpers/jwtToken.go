@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -46,7 +45,7 @@ func JWTTokenGenerator(email string, firstName string, lastName string, uid stri
 	return token, refreshToken, err
 }
 
-func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
+func ValidateToken(signedToken string) (claims *SignedDetails, status bool) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&SignedDetails{},
@@ -56,22 +55,20 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 	)
 
 	if err != nil {
-		msg = err.Error()
-		return
+
+		return nil, false
 	}
 
 	claims, ok := token.Claims.(*SignedDetails)
 	if !ok {
-		msg = fmt.Sprintf("the token is invalid")
-		msg = err.Error()
-		return
+
+		return nil, false
 	}
 
 	if claims.ExpiresAt < time.Now().Local().Unix() {
-		msg = fmt.Sprintf("token is expired")
-		msg = err.Error()
-		return
+
+		return nil, false
 	}
 
-	return claims, msg
+	return claims, true
 }

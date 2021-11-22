@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/signin", Signin.HandleSignin)
 	http.HandleFunc("/emailVerify", EmailVerification.HandleEmailVerification)
 	http.HandleFunc("/forgotPass", ForgotPass.HandleForgotPass)
+	http.HandleFunc("/codeAuth", ForgotPass.HandleCodeAuth)
 	http.HandleFunc("/newPass", ForgotPass.HandleNewPassword)
 
 	http.ListenAndServe(":8080", nil)
