@@ -1,7 +1,7 @@
 package EmailVerification
 
 import (
-	"GO/database"
+	database "GO/database"
 	"fmt"
 	"net/http"
 )
