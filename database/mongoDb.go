@@ -38,17 +38,29 @@ func HandleDatabaseInsert(DBname string, CollectionName string, email string, ph
 		"updated_at": updated,
 	})
 
-	collectionToken := client.Database(DBname).Collection("tokens")
-	collectionToken.InsertOne(ctx, bson.M{
-		"token":      token,
-		"code":       code,
-		"created_at": created,
-	})
+	HandleInsertToken(DBname, "tokens", token, code, created)
 
 	if errInsert != nil {
 		return false
 	}
 	defer client.Disconnect(ctx)
+	return true
+
+}
+
+func HandleInsertToken(DBName string, CollectionName string, token string, code int, created time.Time) bool {
+	ctx, client := HandleDBConnection()
+
+	collectionToken := client.Database(DBName).Collection(CollectionName)
+
+	data := bson.M{"token": token, "code": code, "created_at": created}
+
+	_, errInsert := collectionToken.InsertOne(ctx, data)
+
+	if errInsert != nil {
+		return false
+	}
+
 	return true
 
 }
@@ -103,6 +115,20 @@ func HandleForgotPass(email string, DBName string, CollectionName string) bool {
 	errFind := collection.FindOne(ctx, bson.M{"email": email}).Decode(&result)
 
 	if errFind != nil {
+		return false
+	}
+
+	defer client.Disconnect(ctx)
+	return true
+}
+
+func HandleRemoveCode(DBName string, CollectionName string, code int, token string) bool {
+	ctx, client := HandleDBConnection()
+
+	collection := client.Database(DBName).Collection(CollectionName)
+
+	_, err := collection.DeleteOne(ctx, bson.M{"code": code})
+	if err != nil {
 		return false
 	}
 

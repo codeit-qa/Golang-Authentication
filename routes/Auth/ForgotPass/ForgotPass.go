@@ -2,9 +2,12 @@ package routes
 
 import (
 	database "GO/database"
+	helpers "GO/helpers"
 	models "GO/models"
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func HandleForgotPass(response http.ResponseWriter, request *http.Request) {
@@ -32,6 +35,15 @@ func HandleForgotPass(response http.ResponseWriter, request *http.Request) {
 		return
 	} else if status {
 		response.WriteHeader(http.StatusOK)
+
+		generatedCode := helpers.HandleCodeGenerator(6)
+		code, _ := strconv.Atoi(generatedCode)
+
+		helpers.HandleEmailService(forgot.Email, code)
+
+		token, _, _ := helpers.JWTTokenGenerator(forgot.Email, "", "", "")
+
+		database.HandleInsertToken("GO", "tokens", token, code, time.Now())
 
 	}
 }

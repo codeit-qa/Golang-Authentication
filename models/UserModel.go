@@ -47,3 +47,8 @@ type Code struct {
 type ForgotPass struct {
 	Email string `json:"email"`
 }
+
+type NewPassword struct {
+	NewPassword     string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
+}
