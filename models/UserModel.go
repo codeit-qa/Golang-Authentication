@@ -52,3 +52,17 @@ type NewPassword struct {
 	NewPassword     string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 }
+
+type UserAgent struct {
+	UserAgent string `json:"user_agent"`
+	Browser   struct {
+		Name    string `json:"name"`
+		Version string `json:"version"`
+	} `json:"browser"`
+	OS struct {
+		Platform string `json:"platform"`
+		Name     string `json:"name"`
+		Version  string `json:"version"`
+	} `json:"os"`
+	DeviceType string `json:"device_type"`
+}

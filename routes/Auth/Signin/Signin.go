@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -13,6 +14,10 @@ import (
 )
 
 func HandleSignin(response http.ResponseWriter, request *http.Request) {
+
+	forwarded := request.Header.Get("X-FORWARDED-FOR")
+
+	fmt.Println(forwarded)
 
 	if request.Method != "POST" {
 		response.WriteHeader(http.StatusMethodNotAllowed)

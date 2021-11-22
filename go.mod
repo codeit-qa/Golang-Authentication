@@ -7,7 +7,10 @@ require (
 	go.mongodb.org/mongo-driver v1.7.4
 )
 
+require github.com/mileusna/useragent v1.0.2 // indirect
+
 require (
+	github.com/avct/uasurfer v0.0.0-20191028135549-26b5daa857f1
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/joho/godotenv v1.4.0

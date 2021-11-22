@@ -21,7 +21,7 @@ func HandleDBConnection() (context.Context, *mongo.Client) {
 	return ctx, client
 }
 
-func HandleDatabaseInsert(DBname string, CollectionName string, email string, phone int, password string, fname string, lname string, uid string, created time.Time, updated time.Time, token string, code int) bool {
+func HandleDatabaseInsert(DBname string, CollectionName string, email string, phone int, password string, fname string, lname string, uid string, created time.Time, updated time.Time, token string, code int, agent interface{}) bool {
 
 	ctx, client := HandleDBConnection()
 
@@ -36,6 +36,7 @@ func HandleDatabaseInsert(DBname string, CollectionName string, email string, ph
 		"user_id":    uid,
 		"created_at": created,
 		"updated_at": updated,
+		"UserAgent":  agent,
 	})
 
 	HandleInsertToken(DBname, "tokens", token, code, created)
