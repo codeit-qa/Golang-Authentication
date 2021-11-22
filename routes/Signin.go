@@ -39,8 +39,7 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusUnauthorized)
 		response.Write([]byte("{\"message\": \"Invalid credentials\"}"))
 		return
-	}
-	if auth {
+	} else if auth {
 		response.WriteHeader(http.StatusOK)
 		json.NewEncoder(response).Encode(&result)
 	}

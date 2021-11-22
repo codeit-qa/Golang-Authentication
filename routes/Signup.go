@@ -10,6 +10,7 @@ import (
 	model "GO/models"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HandleSignup(response http.ResponseWriter, request *http.Request) {
@@ -38,7 +39,8 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	token, refreshToken, _ := helper.JWTTokenGenerator(user.Email, user.First_name, user.Last_name, user.User_id)
 	user.Token = token
 	user.Refresh_token = refreshToken
-
+	encryptedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	user.Password = string(encryptedPassword)
 	result.Token = token
 	result.Expires_in = time.Now().Local().Add(time.Hour * time.Duration(24)).Unix()
 

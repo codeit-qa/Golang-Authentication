@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
 
 	models "GO/models"
 )
@@ -50,7 +51,12 @@ func HandleAuthentication(email string, password string, DBname string, Collecti
 
 	collection := client.Database(DBname).Collection(CollectionName)
 
-	errFind := collection.FindOne(ctx, bson.M{"email": email, "password": password}).Decode(&user)
+	errFind := collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+
+	decryptPassword := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if decryptPassword != nil {
+		return false, "", "", "", ""
+	}
 
 	if errFind != nil {
 		return false, "", "", "", ""
