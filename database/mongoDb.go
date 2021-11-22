@@ -12,12 +12,18 @@ import (
 	models "GO/models"
 )
 
-func HandleDatabaseInsert(DBname string, CollectionName string, email string, phone int, password string, fname string, lname string, uid string, created time.Time, updated time.Time) bool {
+func HandleDBConnection() (context.Context, *mongo.Client) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
 	if err != nil {
 		panic(err)
 	}
+	return ctx, client
+}
+
+func HandleDatabaseInsert(DBname string, CollectionName string, email string, phone int, password string, fname string, lname string, uid string, created time.Time, updated time.Time, token string) bool {
+
+	ctx, client := HandleDBConnection()
 
 	collection := client.Database(DBname).Collection(CollectionName)
 
@@ -32,6 +38,12 @@ func HandleDatabaseInsert(DBname string, CollectionName string, email string, ph
 		"updated_at": updated,
 	})
 
+	collectionToken := client.Database(DBname).Collection("tokens")
+	collectionToken.InsertOne(ctx, bson.M{
+		"token":      token,
+		"created_at": created,
+	})
+
 	if errInsert != nil {
 		return false
 	}
@@ -43,11 +55,7 @@ func HandleAuthentication(email string, password string, DBname string, Collecti
 
 	var user models.AuthenticationModel
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
-	if err != nil {
-		panic(err)
-	}
+	ctx, client := HandleDBConnection()
 
 	collection := client.Database(DBname).Collection(CollectionName)
 
@@ -64,4 +72,21 @@ func HandleAuthentication(email string, password string, DBname string, Collecti
 	}
 
 	return true, user.Email, user.First_name, user.Last_name, user.User_id
+}
+
+func HandleTokenAuthentication(DBname string, CollectionName string, token string) (bool, string) {
+
+	var result models.ResponseModel
+
+	ctx, client := HandleDBConnection()
+
+	collection := client.Database(DBname).Collection(CollectionName)
+
+	errFind := collection.FindOne(ctx, bson.M{"token": token}).Decode(&result)
+
+	if errFind != nil {
+		return false, ""
+	}
+
+	return true, result.Token
 }

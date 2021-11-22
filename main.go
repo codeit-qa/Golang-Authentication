@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
+	EmailVerification "GO/routes/Auth/EmailVerification"
 	Signin "GO/routes/Auth/Signin"
 	Signup "GO/routes/Auth/Signup"
-	EmailVerification "GO/routes/EmailVerification"
 )
 
 func main() {
