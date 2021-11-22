@@ -21,7 +21,7 @@ func HandleDBConnection() (context.Context, *mongo.Client) {
 	return ctx, client
 }
 
-func HandleDatabaseInsert(DBname string, CollectionName string, email string, phone int, password string, fname string, lname string, uid string, created time.Time, updated time.Time, token string) bool {
+func HandleDatabaseInsert(DBname string, CollectionName string, email string, phone int, password string, fname string, lname string, uid string, created time.Time, updated time.Time, token string, code int) bool {
 
 	ctx, client := HandleDBConnection()
 
@@ -41,14 +41,16 @@ func HandleDatabaseInsert(DBname string, CollectionName string, email string, ph
 	collectionToken := client.Database(DBname).Collection("tokens")
 	collectionToken.InsertOne(ctx, bson.M{
 		"token":      token,
+		"code":       code,
 		"created_at": created,
 	})
 
 	if errInsert != nil {
 		return false
 	}
-
+	defer client.Disconnect(ctx)
 	return true
+
 }
 
 func HandleAuthentication(email string, password string, DBname string, CollectionName string) (bool, string, string, string, string) {
@@ -70,11 +72,11 @@ func HandleAuthentication(email string, password string, DBname string, Collecti
 		return false, "", "", "", ""
 
 	}
-
+	defer client.Disconnect(ctx)
 	return true, user.Email, user.First_name, user.Last_name, user.User_id
 }
 
-func HandleTokenAuthentication(DBname string, CollectionName string, token string) (bool, string) {
+func HandleTokenAuthentication(DBname string, CollectionName string, token string, code int) bool {
 
 	var result models.ResponseModel
 
@@ -82,11 +84,11 @@ func HandleTokenAuthentication(DBname string, CollectionName string, token strin
 
 	collection := client.Database(DBname).Collection(CollectionName)
 
-	errFind := collection.FindOne(ctx, bson.M{"token": token}).Decode(&result)
+	errFind := collection.FindOne(ctx, bson.M{"token": token, "code": code}).Decode(&result)
 
 	if errFind != nil {
-		return false, ""
+		return false
 	}
-
-	return true, result.Token
+	defer client.Disconnect(ctx)
+	return true
 }

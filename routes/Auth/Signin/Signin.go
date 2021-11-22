@@ -2,6 +2,8 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"time"
 
@@ -22,10 +24,16 @@ func HandleSignin(response http.ResponseWriter, request *http.Request) {
 	var user model.AuthenticationModel
 	var result model.ResponseModel
 
-	err := json.NewDecoder(request.Body).Decode(&user)
+	dec := json.NewDecoder(request.Body)
+	dec.DisallowUnknownFields()
+	err := dec.Decode(&user)
 
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusBadRequest)
+		if errors.Is(err, io.EOF) {
+			response.WriteHeader(http.StatusBadRequest)
+			response.Write([]byte("{\"message\": \"UnAthorized\"}"))
+		}
 		return
 	}
 

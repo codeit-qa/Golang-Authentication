@@ -39,3 +39,7 @@ type ResponseModel struct {
 	Token      string `json:"token"`
 	Expires_in int64  `json:"expires_in"`
 }
+
+type Code struct {
+	Code int `json:"code"`
+}
