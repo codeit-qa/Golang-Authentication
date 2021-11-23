@@ -66,3 +66,9 @@ type UserAgent struct {
 	} `json:"os"`
 	DeviceType string `json:"device_type"`
 }
+
+type GoogleAuthenticate struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+	URL   string `json:"url"`
+}

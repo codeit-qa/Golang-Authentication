@@ -11,6 +11,7 @@ require github.com/mileusna/useragent v1.0.2 // indirect
 
 require (
 	github.com/avct/uasurfer v0.0.0-20191028135549-26b5daa857f1
+	github.com/dgryski/dgoogauth v0.0.0-20190221195224-5a805980a5f3
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/joho/godotenv v1.4.0
@@ -23,4 +24,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073 // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/text v0.3.5 // indirect
+	rsc.io/qr v0.2.0
 )
