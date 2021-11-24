@@ -53,18 +53,19 @@ func HandleGoogleAuthenticate(response http.ResponseWriter, request *http.Reques
 
 	code, err := qr.Encode(URL.String(), qr.Q)
 	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 	b := code.PNG()
 	err = ioutil.WriteFile(qrFilename, b, 0600)
 	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 
 	fmt.Fprintf(response, "QR code is in %s. Please scan it into Google Authenticator app.\n", qrFilename)
 	response.WriteHeader(http.StatusOK)
 
-	return
 }
 
 func HandleCodeAuth(response http.ResponseWriter, request *http.Request) {
