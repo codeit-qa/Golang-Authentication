@@ -41,9 +41,9 @@ func HandleSignup(response http.ResponseWriter, request *http.Request) {
 	agent.UserAgent = userAgent
 	agent.OS.Name = DeviceInfo.OS.Name.String()
 	agent.OS.Platform = DeviceInfo.OS.Platform.String()
-	agent.OS.Version = string(DeviceInfo.OS.Version.Major) + "." + string(DeviceInfo.OS.Version.Minor) + "." + string(DeviceInfo.OS.Version.Patch)
+	agent.OS.Version = string(rune(DeviceInfo.OS.Version.Major)) + "." + string(rune(DeviceInfo.OS.Version.Minor)) + "." + string(rune(DeviceInfo.OS.Version.Patch))
 	agent.Browser.Name = DeviceInfo.Browser.Name.String()
-	agent.Browser.Version = string(DeviceInfo.Browser.Version.Major) + "." + string(DeviceInfo.Browser.Version.Minor) + "." + string(DeviceInfo.Browser.Version.Patch)
+	agent.Browser.Version = string(rune(DeviceInfo.Browser.Version.Major)) + "." + string(rune(DeviceInfo.Browser.Version.Minor)) + "." + string(rune(DeviceInfo.Browser.Version.Patch))
 	agent.DeviceType = DeviceInfo.DeviceType.String()
 
 	user.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
