@@ -16,11 +16,18 @@
 ## Setup
 
 ```
-git clone https://github.com/muhammadqazi/Go-Authentication.git
+git clone https://github.com/code-it-qa/Authentication-Server.git
 ```
 
 Start the server @localhost:8080
 
 ```
 go run main.go
+```
+
+## Author
+Muhammad Qazi
+
+```
+https://github.com/muhammadqazi
 ```
